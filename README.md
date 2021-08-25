@@ -7,18 +7,32 @@ For now have completed the setup of the project and app, created the view and mo
 
 ## Code
 
-A view function that returns a HTTP Response when called in the views.py
+View's functions that render templates when called in the views.py
 
 ```Python
+# first view function that returns and HTTP Response
 def index(request):
-    return HttpResponse('Hello world, your at the polls index.')
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    context = {
+        'latest_question_list': latest_question_list
+    }
+    return render(request, 'polls/index.html', context)
+
+# displays the detail of a question
+def detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, "polls/detail.html", { 'question': question })
 ```
 
 A url defined in the polls url.py file
 
 ```Python
+app_name = 'polls'
 urlpatterns = [
     path('', views.index, name='index'),
+    path('<int:question_id>/', views.detail, name='detail'),
+    path('<int:question_id>/results/', views.results, name='results'),
+    path('<int:question_id>/vote/', views.vote, name='vote'),
 ]
 ```
 
